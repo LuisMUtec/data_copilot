@@ -1,4 +1,4 @@
-import { openaiService } from "./openai";
+import { geminiService } from "./gemini";
 import { googleSheetsService } from "./googleSheets";
 import { storage } from "../storage";
 import type { DataSource, InsertQuery, InsertVisualization } from "@shared/schema";
@@ -27,7 +27,7 @@ export class QueryProcessorService {
   ): Promise<ProcessedQuery> {
     try {
       // Step 1: Analyze the natural language query
-      const analysis = await openaiService.analyzeNaturalLanguageQuery(naturalLanguageQuery);
+      const analysis = await geminiService.analyzeNaturalLanguageQuery(naturalLanguageQuery);
       
       // Step 2: Determine data source
       let dataSource: DataSource | undefined;
@@ -51,7 +51,7 @@ export class QueryProcessorService {
         schema = await googleSheetsService.getSheetSchema(dataSource.config as any);
         
         // Step 4: Generate specific query for data source
-        const dataQuery = await openaiService.generateDataQuery(
+        const dataQuery = await geminiService.generateDataQuery(
           naturalLanguageQuery,
           analysis,
           schema
@@ -93,7 +93,7 @@ export class QueryProcessorService {
 
         // Step 7: Generate insights
         const insights = visualization 
-          ? await openaiService.generateChartInsights(
+          ? await geminiService.generateChartInsights(
               visualization.data,
               analysis.suggestedVisualization,
               naturalLanguageQuery

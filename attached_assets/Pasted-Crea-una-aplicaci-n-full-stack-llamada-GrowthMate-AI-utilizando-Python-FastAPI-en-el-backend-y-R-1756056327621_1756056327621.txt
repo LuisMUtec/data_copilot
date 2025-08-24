@@ -1,0 +1,62 @@
+Crea una aplicación full-stack llamada "GrowthMate AI" utilizando Python (FastAPI) en el backend y React/Next.js en el frontend. La aplicación es un chatbot analítico para emprendedores que permite hacer consultas en lenguaje natural y visualizar gráficos de sus datos.
+
+**REQUISITOS TÉCNICOS:**
+
+1. **Arquitectura:**
+   - Backend: FastAPI con endpoints RESTful
+   - Frontend: Next.js 14 con App Router
+   - Base de datos: PostgreSQL para almacenar consultas y configuraciones
+   - Autenticación: JWT tokens
+   - Comunicación: WebSockets para respuestas en tiempo real
+
+2. **Funcionalidades principales:**
+   - Chat interactivo con historial de conversación
+   - Procesamiento de lenguaje natural para interpretar consultas
+   - Sistema de plantillas predefinidas para emprendedores
+   - Conexión a Google Sheets mediante API
+   - Generación de gráficos con Chart.js/Recharts
+   - Exportación de resultados (imágenes, PDF)
+
+3. **Flujo de datos:**
+   - Usuario escribe consulta en lenguaje natural
+   - Backend procesa con LLM (usar LiteLLM para compatibilidad multi-proveedor)
+   - Traducción a consulta estructurada
+   - Conexión a base de datos mediante MCP-like layer
+   - Procesamiento y transformación de datos
+   - Generación de visualización
+   - Respuesta con gráfico + explicación
+
+4. **Características clave:**
+   - Interfaz móvil-responsive
+   - Sistema de prompts optimizado para consultas de negocios
+   - Validación de exactitud de datos con múltiples capas
+   - Sistema de plantillas para verticales específicas (e-commerce, servicios, etc.)
+   - Panel administrativo para gestionar conexiones a datos
+
+5. **Implementar:**
+   - models.py: Definición de modelos SQLAlchemy para User, Query, Dataset, Visualization
+   - routers/: Auth, queries, datasets, visualizations
+   - services/: GoogleSheetsService, QueryProcessingService, VisualizationService
+   - frontend/: Componentes ChatInterface, ChartRenderer, DataConnectionManager
+   - middleware: Authentication, Rate limiting, CORS
+
+6. **Despliegue:**
+   - Configuración para Replit con .replit file
+   - Variables de entorno para API keys
+   - Scripts de inicialización de base de datos
+
+**INSTRUCCIONES ESPECÍFICAS:**
+- Usar Python 3.10+
+- Usar SQLAlchemy 2.0+ con patrones async
+- Implementar patrón repository para acceso a datos
+- Crear sistema de plantillas de prompts para diferentes tipos de consultas
+- Implementar caché con Redis para resultados frecuentes
+- Asegurar manejo adecuado de errores y logging
+- Crear componentes reutilizables en React con TypeScript
+- Implementar tests básicos para endpoints críticos
+
+**ENTREGABLES:**
+- Código completo funcionando en Replit
+- Documentación de API en /docs (FastAPI autodoc)
+- Instrucciones de configuración para Google Sheets API
+- Ejemplos de consultas preconfiguradas
