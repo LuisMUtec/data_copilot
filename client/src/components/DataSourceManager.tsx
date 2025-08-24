@@ -130,11 +130,12 @@ export default function DataSourceManager() {
   });
 
   const onSubmit = (data: DataSourceForm) => {
+    const configData = form.getValues("config") as any;
     let config = {};
     
     if (data.type === "google_sheets") {
-      const spreadsheetId = (form.getValues("config") as any)?.spreadsheetId;
-      const range = (form.getValues("config") as any)?.range;
+      const spreadsheetId = configData?.spreadsheetId;
+      const range = configData?.range;
       
       if (!spreadsheetId) {
         toast({
@@ -148,6 +149,57 @@ export default function DataSourceManager() {
       config = {
         spreadsheetId,
         range: range || "A:Z",
+      };
+    } else if (data.type === "csv") {
+      const fileName = configData?.fileName;
+      const hasHeader = configData?.hasHeader;
+      
+      if (!fileName) {
+        toast({
+          title: "Error",
+          description: "Please select a CSV file",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      config = {
+        fileName,
+        hasHeader: hasHeader !== false,
+        fileSize: configData?.fileSize
+      };
+    } else if (data.type === "postgresql") {
+      const connectionString = configData?.connectionString;
+      
+      if (!connectionString) {
+        toast({
+          title: "Error",
+          description: "Connection string is required for PostgreSQL",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      config = {
+        connectionString,
+        tableName: configData?.tableName
+      };
+    } else if (data.type === "api") {
+      const apiUrl = configData?.apiUrl;
+      
+      if (!apiUrl) {
+        toast({
+          title: "Error",
+          description: "API URL is required",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      config = {
+        apiUrl,
+        apiKey: configData?.apiKey,
+        method: configData?.method || "GET"
       };
     }
 
@@ -294,18 +346,26 @@ export default function DataSourceManager() {
             {selectedType === "google_sheets" && (
               <>
                 <div>
-                  <Label htmlFor="spreadsheetId">Spreadsheet ID</Label>
+                  <Label htmlFor="spreadsheetId">Spreadsheet URL or ID</Label>
                   <Input
                     id="spreadsheetId"
-                    placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
-                    onChange={(e) => form.setValue("config", { 
-                      ...form.getValues("config"), 
-                      spreadsheetId: e.target.value 
-                    })}
+                    placeholder="https://docs.google.com/spreadsheets/d/1BxiMVs0XRA... or just the ID"
+                    onChange={(e) => {
+                      let value = e.target.value;
+                      // Extract spreadsheet ID from URL if needed
+                      const urlMatch = value.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+                      if (urlMatch) {
+                        value = urlMatch[1];
+                      }
+                      form.setValue("config", { 
+                        ...form.getValues("config"), 
+                        spreadsheetId: value 
+                      });
+                    }}
                     data-testid="input-spreadsheet-id"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Copy from the Google Sheets URL
+                    Paste the full Google Sheets URL or just the spreadsheet ID
                   </p>
                 </div>
                 <div>
@@ -319,6 +379,139 @@ export default function DataSourceManager() {
                     })}
                     data-testid="input-range"
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Specify the range of cells to import (e.g., A1:D100)
+                  </p>
+                </div>
+              </>
+            )}
+
+            {selectedType === "csv" && (
+              <>
+                <div>
+                  <Label htmlFor="csvFile">CSV File Upload</Label>
+                  <Input
+                    id="csvFile"
+                    type="file"
+                    accept=".csv"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        form.setValue("config", { 
+                          ...form.getValues("config"), 
+                          fileName: file.name,
+                          fileSize: file.size
+                        });
+                      }
+                    }}
+                    data-testid="input-csv-file"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Select a CSV file from your computer
+                  </p>
+                </div>
+                <div>
+                  <Label htmlFor="hasHeader">Has Header Row?</Label>
+                  <Select onValueChange={(value) => {
+                    form.setValue("config", { 
+                      ...form.getValues("config"), 
+                      hasHeader: value === "true"
+                    });
+                  }}>
+                    <SelectTrigger data-testid="select-has-header">
+                      <SelectValue placeholder="Yes" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">Yes</SelectItem>
+                      <SelectItem value="false">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
+            )}
+
+            {selectedType === "postgresql" && (
+              <>
+                <div>
+                  <Label htmlFor="connectionString">Connection String</Label>
+                  <Input
+                    id="connectionString"
+                    type="password"
+                    placeholder="postgresql://username:password@host:port/database"
+                    onChange={(e) => form.setValue("config", { 
+                      ...form.getValues("config"), 
+                      connectionString: e.target.value 
+                    })}
+                    data-testid="input-connection-string"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Your PostgreSQL database connection string
+                  </p>
+                </div>
+                <div>
+                  <Label htmlFor="tableName">Table Name (optional)</Label>
+                  <Input
+                    id="tableName"
+                    placeholder="users, orders, products..."
+                    onChange={(e) => form.setValue("config", { 
+                      ...form.getValues("config"), 
+                      tableName: e.target.value 
+                    })}
+                    data-testid="input-table-name"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Leave empty to access all tables
+                  </p>
+                </div>
+              </>
+            )}
+
+            {selectedType === "api" && (
+              <>
+                <div>
+                  <Label htmlFor="apiUrl">API URL</Label>
+                  <Input
+                    id="apiUrl"
+                    placeholder="https://api.example.com/data"
+                    onChange={(e) => form.setValue("config", { 
+                      ...form.getValues("config"), 
+                      apiUrl: e.target.value 
+                    })}
+                    data-testid="input-api-url"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    The endpoint URL for your API
+                  </p>
+                </div>
+                <div>
+                  <Label htmlFor="apiKey">API Key (optional)</Label>
+                  <Input
+                    id="apiKey"
+                    type="password"
+                    placeholder="Your API key"
+                    onChange={(e) => form.setValue("config", { 
+                      ...form.getValues("config"), 
+                      apiKey: e.target.value 
+                    })}
+                    data-testid="input-api-key"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="requestMethod">HTTP Method</Label>
+                  <Select onValueChange={(value) => {
+                    form.setValue("config", { 
+                      ...form.getValues("config"), 
+                      method: value
+                    });
+                  }}>
+                    <SelectTrigger data-testid="select-http-method">
+                      <SelectValue placeholder="GET" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="GET">GET</SelectItem>
+                      <SelectItem value="POST">POST</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </>
             )}

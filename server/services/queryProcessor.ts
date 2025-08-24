@@ -1,5 +1,8 @@
 import { geminiService } from "./gemini";
 import { googleSheetsService } from "./googleSheets";
+import { csvService } from "./csvService";
+import { apiService } from "./apiService";
+import { postgresqlService } from "./postgresqlService";
 import { storage } from "../storage";
 import type { DataSource, InsertQuery, InsertVisualization } from "@shared/schema";
 
@@ -59,6 +62,36 @@ export class QueryProcessorService {
 
         // Step 5: Execute query against data source
         results = await googleSheetsService.executeQuery(dataSource.config as any, dataQuery);
+      } else if (dataSource.type === "csv") {
+        schema = await csvService.getCSVSchema(dataSource.config as any);
+        
+        const dataQuery = await geminiService.generateDataQuery(
+          naturalLanguageQuery,
+          analysis,
+          schema
+        );
+
+        results = await csvService.executeQuery(dataSource.config as any, dataQuery);
+      } else if (dataSource.type === "api") {
+        schema = await apiService.getAPISchema(dataSource.config as any);
+        
+        const dataQuery = await geminiService.generateDataQuery(
+          naturalLanguageQuery,
+          analysis,
+          schema
+        );
+
+        results = await apiService.executeQuery(dataSource.config as any, dataQuery);
+      } else if (dataSource.type === "postgresql") {
+        schema = await postgresqlService.getPostgreSQLSchema(dataSource.config as any);
+        
+        const dataQuery = await geminiService.generateDataQuery(
+          naturalLanguageQuery,
+          analysis,
+          schema
+        );
+
+        results = await postgresqlService.executeQuery(dataSource.config as any, dataQuery);
         
         // Store the processed query
         const query = await storage.createQuery({
@@ -110,9 +143,6 @@ export class QueryProcessorService {
           visualization,
           insights,
         };
-      } else if (dataSource.type === "postgresql") {
-        // Handle PostgreSQL queries
-        throw new Error("PostgreSQL data source not implemented yet");
       } else {
         throw new Error(`Unsupported data source type: ${dataSource.type}`);
       }

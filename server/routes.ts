@@ -223,11 +223,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Validate connection before saving
-      if (dataSourceData.type === "google_sheets") {
-        const isValid = await googleSheetsService.validateConnection(dataSourceData.config as any);
-        if (!isValid) {
-          return res.status(400).json({ message: "Invalid Google Sheets configuration" });
+      let isValid = false;
+      try {
+        if (dataSourceData.type === "google_sheets") {
+          isValid = await googleSheetsService.validateConnection(dataSourceData.config as any);
+        } else if (dataSourceData.type === "csv") {
+          const { csvService } = await import("./services/csvService");
+          isValid = await csvService.validateConnection(dataSourceData.config as any);
+        } else if (dataSourceData.type === "api") {
+          const { apiService } = await import("./services/apiService");
+          isValid = await apiService.validateConnection(dataSourceData.config as any);
+        } else if (dataSourceData.type === "postgresql") {
+          const { postgresqlService } = await import("./services/postgresqlService");
+          isValid = await postgresqlService.validateConnection(dataSourceData.config as any);
+        } else {
+          isValid = true; // For unknown types, skip validation for now
         }
+      } catch (validationError) {
+        return res.status(400).json({ 
+          message: "Connection test failed", 
+          error: (validationError as Error).message 
+        });
+      }
+
+      if (!isValid) {
+        return res.status(400).json({ 
+          message: "Could not connect to data source. Please check your configuration." 
+        });
       }
 
       const dataSource = await storage.createDataSource(dataSourceData);

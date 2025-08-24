@@ -12,10 +12,9 @@ export default function ChatPage() {
   useEffect(() => {
     if (conversationId && conversationId !== currentConversation?.id) {
       setCurrentConversation(conversationId);
-    } else if (!conversationId && !currentConversation) {
-      createNewConversation("New Analytics Chat");
     }
-  }, [conversationId, currentConversation, setCurrentConversation, createNewConversation]);
+    // Don't automatically create new conversation - let user click the button
+  }, [conversationId, currentConversation, setCurrentConversation]);
 
   return (
     <div className="min-h-screen flex bg-gray-50">
