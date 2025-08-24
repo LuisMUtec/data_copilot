@@ -1,0 +1,31 @@
+{
+  "name": "mcp-postgres-analytics",
+  "version": "1.0.0",
+  "description": "Implementación completa de MCP PostgreSQL con Analytics y Gemini AI",
+  "main": "mcp-websocket-proxy.js",
+  "scripts": {
+    "start": "node mcp-websocket-proxy.js",
+    "mcp:start": "powershell -ExecutionPolicy Bypass -File start-mcp-analytics.ps1",
+    "analytics": "start frontend-analytics.html",
+    "client": "start client-mcp-direct.html",
+    "proxy": "node mcp-websocket-proxy.js",
+    "server": "node mcp-postgres-server.js"
+  },
+  "keywords": [
+    "mcp",
+    "postgres", 
+    "websocket",
+    "model-context-protocol",
+    "gemini",
+    "analytics",
+    "charts",
+    "ai"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "postgres": "^3.4.7",
+    "ws": "^8.18.3"
+  }
+}
