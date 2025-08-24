@@ -1,0 +1,82 @@
+Crea una aplicación full-stack llamada "GrowthMate AI" utilizando Node.js/Express en el backend y React con Vite en el frontend. La aplicación es un chatbot analítico para emprendedores que permite hacer consultas en lenguaje natural y visualizar gráficos de sus datos.
+
+**REQUISITOS TÉCNICOS:**
+
+1. **Arquitectura:**
+   - Backend: Node.js + Express.js con endpoints RESTful
+   - Frontend: React 18 + Vite + TypeScript
+   - Base de datos: PostgreSQL para almacenar consultas y configuraciones
+   - ORM: Prisma para acceso a la base de datos
+   - Autenticación: JWT tokens
+   - Comunicación: WebSockets para respuestas en tiempo real (Socket.io)
+
+2. **Funcionalidades principales:**
+   - Chat interactivo con historial de conversación
+   - Procesamiento de lenguaje natural para interpretar consultas
+   - Sistema de plantillas predefinidas para emprendedores
+   - Conexión a Google Sheets mediante API
+   - Generación de gráficos con Recharts/Chart.js
+   - Exportación de resultados (imágenes, PDF)
+
+3. **Flujo de datos:**
+   - Usuario escribe consulta en lenguaje natural
+   - Backend procesa con LLM (usar OpenAI GPT)
+   - Traducción a consulta estructurada
+   - Conexión a base de datos mediante capa de abstracción
+   - Procesamiento y transformación de datos
+   - Generación de visualización
+   - Respuesta con gráfico + explicación
+
+4. **Características clave:**
+   - Interfaz móvil-responsive con Tailwind CSS
+   - Sistema de prompts optimizado para consultas de negocios
+   - Validación de exactitud de datos con múltiples capas
+   - Sistema de plantillas para verticales específicas (e-commerce, servicios, etc.)
+   - Panel administrativo para gestionar conexiones a datos
+
+5. **Estructura de backend (Node.js/Express):**
+   - `/models`: Modelos de Prisma y definiciones de tipos
+   - `/routes`: Auth, queries, datasets, visualizations
+   - `/controllers`: Lógica de negocio para cada endpoint
+   - `/services`: GoogleSheetsService, QueryProcessingService, VisualizationService
+   - `/middleware`: Authentication, validación, rate limiting
+   - `/utils`: Helpers, prompts, configuración
+
+6. **Estructura de frontend (React + Vite + TypeScript):**
+   - `/src/components`: ChatInterface, ChartRenderer, DataConnectionManager
+   - `/src/pages`: Dashboard, Login, History
+   - `/src/hooks`: Custom hooks para API calls y estado
+   - `/src/services`: API clients y servicios
+   - `/src/types`: Definiciones TypeScript
+   - `/src/utils`: Helpers y formateadores
+
+7. **Implementar:**
+   - Esquema de Prisma para User, Query, Dataset, Visualization
+   - Sistema de autenticación JWT con refresh tokens
+   - Integración con Google Sheets API
+   - Procesamiento de NLP usando OpenAI API
+   - Generación de gráficos con Recharts
+   - Sistema de plantillas de prompts para diferentes tipos de consultas
+
+8. **Despliegue:**
+   - Configuración para Replit con .replit file
+   - Variables de entorno para API keys
+   - Scripts de inicialización de base de datos
+
+**INSTRUCCIONES ESPECÍFICAS:**
+- Usar Node.js 18+ y npm como gestor de paquetes
+- Implementar Prisma como ORM con migrations
+- Usar TypeScript en ambos lados (frontend y backend)
+- Implementar patrón de servicios para lógica de negocio
+- Crear sistema de plantillas de prompts para diferentes tipos de consultas
+- Implementar caché con Redis para resultados frecuentes
+- Asegurar manejo adecuado de errores y logging
+- Crear componentes reutilizables en React con TypeScript
+- Implementar tests básicos para endpoints críticos con Jest
+
+**ENTREGABLES:**
+- Código completo funcionando en Replit
+- Documentación de API en /api/docs
+- Instrucciones de configuración para Google Sheets API
+- Ejemplos de consultas preconfiguradas
+- Diseño responsive y moderno
