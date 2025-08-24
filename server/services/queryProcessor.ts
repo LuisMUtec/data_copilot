@@ -92,60 +92,82 @@ export class QueryProcessorService {
         );
 
         results = await postgresqlService.executeQuery(dataSource.config as any, dataQuery);
-        
-        // Store the processed query
-        const query = await storage.createQuery({
+      } else {
+        throw new Error(`Unsupported data source type: ${dataSource.type}`);
+      }
+
+      // Store the processed query (for all data source types)
+      let queryId = `query-${Date.now()}`;
+      let storedQuery;
+      
+      try {
+        storedQuery = await storage.createQuery({
           userId,
           conversationId,
           originalQuery: naturalLanguageQuery,
-          processedQuery: dataQuery,
+          processedQuery: JSON.stringify({ analysis, schema }),
           queryType: analysis.queryType,
           dataSourceId: dataSource.id,
           results: results as any,
         });
+        queryId = storedQuery.id;
+      } catch (queryError) {
+        console.log("Query storage failed, using fallback ID:", queryError);
+      }
 
-        // Step 6: Generate visualization if appropriate
-        let visualization;
-        if (results.length > 0 && this.shouldCreateVisualization(analysis.queryType)) {
-          const vizData = this.prepareVisualizationData(results, analysis.suggestedVisualization);
-          
-          visualization = {
-            type: analysis.suggestedVisualization,
-            data: vizData,
-            config: this.generateVisualizationConfig(analysis.suggestedVisualization, vizData),
+      // Generate visualization if appropriate
+      let visualization;
+      if (results.length > 0 && this.shouldCreateVisualization(analysis.queryType)) {
+        const vizData = this.prepareVisualizationData(results, analysis.suggestedVisualization);
+        
+        visualization = {
+          type: analysis.suggestedVisualization,
+          data: vizData,
+          config: this.generateVisualizationConfig(analysis.suggestedVisualization, vizData),
+        };
+
+        // Store visualization if query was stored successfully
+        if (storedQuery) {
+          try {
+            await storage.createVisualization({
+              queryId: storedQuery.id,
+              type: analysis.suggestedVisualization,
+              config: visualization.config as any,
+              data: visualization.data as any,
+            });
+          } catch (vizError) {
+            console.log("Visualization storage failed:", vizError);
+          }
+        }
+      }
+
+      // Generate insights
+      const insights = visualization 
+        ? await geminiService.generateChartInsights(
+            visualization.data,
+            analysis.suggestedVisualization,
+            naturalLanguageQuery
+          )
+        : {
+            summary: `Found ${results.length} records matching your query.`,
+            keyInsights: [
+              `Retrieved ${results.length} data points from your ${dataSource.type} data source`,
+              `Query type: ${analysis.queryType}`,
+              `Data source: ${dataSource.name}`,
+            ],
+            recommendations: [
+              "Consider adding filters for more specific results",
+              "Try asking for trends over time",
+              "Request comparisons between different periods",
+            ],
           };
 
-          // Store visualization
-          await storage.createVisualization({
-            queryId: query.id,
-            type: analysis.suggestedVisualization,
-            config: visualization.config as any,
-            data: visualization.data as any,
-          });
-        }
-
-        // Step 7: Generate insights
-        const insights = visualization 
-          ? await geminiService.generateChartInsights(
-              visualization.data,
-              analysis.suggestedVisualization,
-              naturalLanguageQuery
-            )
-          : {
-              summary: `Found ${results.length} records matching your query.`,
-              keyInsights: [`Retrieved ${results.length} data points`],
-              recommendations: ["Consider adding filters for more specific results"],
-            };
-
-        return {
-          queryId: query.id,
-          results,
-          visualization,
-          insights,
-        };
-      } else {
-        throw new Error(`Unsupported data source type: ${dataSource.type}`);
-      }
+      return {
+        queryId,
+        results,
+        visualization,
+        insights,
+      };
     } catch (error) {
       throw new Error(`Query processing failed: ${(error as Error).message}`);
     }

@@ -14,30 +14,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth Routes
   app.post("/api/auth/register", async (req, res) => {
     try {
-      const { username, email, password } = insertUserSchema.parse(req.body);
-      
-      // Check if user already exists
+      const { username, email, password } = z.object({
+        username: z.string().min(3),
+        email: z.string().email(),
+        password: z.string().min(6),
+      }).parse(req.body);
+
+      console.log(`📝 Registration attempt - Username: ${username}, Email: ${email}`);
+
+      // Check if user exists
       const existingUser = await storage.getUserByEmail(email);
       if (existingUser) {
+        console.log('❌ User already exists');
         return res.status(400).json({ message: "User already exists" });
       }
 
       // Hash password
-      const hashedPassword = await bcrypt.hash(password, 10);
-      
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      console.log(`🔐 Password hashed: ${hashedPassword}`);
+
       // Create user
-      const user = await storage.createUser({
+      const newUser = await storage.createUser({
         username,
         email,
         password: hashedPassword,
       });
 
+      console.log(`✅ User created successfully:`, { id: newUser.id, username: newUser.username, email: newUser.email });
+
       // Generate tokens
-      const { accessToken, refreshToken } = generateTokens(user.id);
+      const { accessToken, refreshToken } = generateTokens(newUser.id);
 
       res.status(201).json({
         message: "User created successfully",
-        user: { id: user.id, username: user.username, email: user.email },
+        user: { id: newUser.id, username: newUser.username, email: newUser.email },
         accessToken,
         refreshToken,
       });
@@ -54,20 +65,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         password: z.string().min(1),
       }).parse(req.body);
 
+      console.log(`🔐 Login attempt for email: ${email}`);
+
       // Find user
       const user = await storage.getUserByEmail(email);
+      console.log(`👤 User found: ${user ? 'Yes' : 'No'}`, user ? { id: user.id, email: user.email } : null);
+      
       if (!user) {
+        console.log('❌ User not found');
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
       // Verify password
+      console.log(`🔍 Comparing password. Plain: "${password}", Hashed: "${user.password}"`);
       const isValidPassword = await bcrypt.compare(password, user.password);
+      console.log(`✅ Password valid: ${isValidPassword}`);
+      
       if (!isValidPassword) {
+        console.log('❌ Invalid password');
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
       // Generate tokens
       const { accessToken, refreshToken } = generateTokens(user.id);
+      console.log(`🎫 Tokens generated for user: ${user.id}`);
 
       res.json({
         message: "Login successful",
@@ -154,26 +175,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Chat Query Routes
   app.post("/api/chat/query", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
+      console.log('Chat query received:', req.body);
+      
       const { query, conversationId, dataSourceId } = z.object({
         query: z.string().min(1),
-        conversationId: z.string().uuid(),
-        dataSourceId: z.string().uuid().optional(),
+        conversationId: z.string().min(1), // More flexible for development
+        dataSourceId: z.string().optional(),
       }).parse(req.body);
 
+      console.log('Parsed query data:', { query, conversationId, dataSourceId });
+
       // Add user message to conversation
-      await storage.createMessage({
+      console.log('Creating user message...');
+      const userMessage = await storage.createMessage({
         conversationId,
         role: "user",
         content: query,
       });
+      console.log('User message created:', userMessage);
 
       // Process the query
+      console.log('Processing query with queryProcessorService...');
       const result = await queryProcessorService.processNaturalLanguageQuery(
         req.user!.id,
         conversationId,
         query,
         dataSourceId
       );
+      console.log('Query processing result:', result);
 
       // Create AI response message
       const responseContent = {
@@ -203,6 +232,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
       });
     } catch (error) {
+      console.error('Error processing chat query:', error);
+      console.error('Error stack:', (error as Error).stack);
       res.status(500).json({ message: "Query processing failed", error: (error as Error).message });
     }
   });
@@ -226,6 +257,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...req.body,
         userId: req.user!.id,
       });
+      
+      // For CSV files, convert fileName to full filePath
+      if (dataSourceData.type === "csv" && dataSourceData.config) {
+        const config = dataSourceData.config as any;
+        if (config.fileName && !config.filePath) {
+          // Map fileName to uploads directory
+          config.filePath = `./uploads/${config.fileName}`;
+        }
+      }
       
       console.log("Parsed data source data:", dataSourceData);
       console.log("About to validate connection...");
