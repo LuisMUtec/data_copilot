@@ -20,7 +20,15 @@ interface ChartInsights {
 export class GeminiService {
   private model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
+  private validateApiKey(): void {
+    if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === "your-actual-gemini-api-key-here") {
+      throw new Error("GEMINI_API_KEY is not configured. Please set a valid API key in your .env file.");
+    }
+  }
+
   async analyzeNaturalLanguageQuery(query: string): Promise<QueryAnalysis> {
+    this.validateApiKey();
+    
     try {
       const prompt = `You are an expert business analyst that converts natural language queries into structured data analysis requests.
             
@@ -58,6 +66,17 @@ export class GeminiService {
       
       return JSON.parse(jsonMatch[0]);
     } catch (error) {
+      if (error instanceof Error) {
+        if (error.message.includes('403') || error.message.includes('Forbidden')) {
+          throw new Error("API key authentication failed. Please check your GEMINI_API_KEY in the .env file and ensure it has proper permissions.");
+        }
+        if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+          throw new Error("Invalid API key. Please verify your GEMINI_API_KEY in the .env file.");
+        }
+        if (error.message.includes('429') || error.message.includes('quota')) {
+          throw new Error("API quota exceeded. Please check your Google AI Studio quota limits.");
+        }
+      }
       throw new Error("Failed to analyze query: " + (error as Error).message);
     }
   }
@@ -67,6 +86,8 @@ export class GeminiService {
     analysis: QueryAnalysis, 
     dataSourceSchema: any
   ): Promise<string> {
+    this.validateApiKey();
+    
     try {
       const prompt = `You are an expert in converting business analytics requests into data queries.
             
@@ -95,6 +116,8 @@ export class GeminiService {
   }
 
   async generateChartInsights(chartData: any, chartType: string, originalQuery: string): Promise<ChartInsights> {
+    this.validateApiKey();
+    
     try {
       const prompt = `You are a business intelligence expert that provides insights from data visualizations.
             
@@ -135,6 +158,8 @@ export class GeminiService {
   }
 
   async generateConversationTitle(messages: string[]): Promise<string> {
+    this.validateApiKey();
+    
     try {
       const prompt = `Generate a concise, descriptive title (max 50 characters) for this business analytics conversation. Focus on the main topic or analysis being discussed.
 
