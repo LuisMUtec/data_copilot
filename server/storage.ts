@@ -262,7 +262,15 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-// Simple in-memory storage for development
+// Simple in-memory storage for development with JSON persistence
+import * as fs from 'fs';
+import * as path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const STORAGE_FILE = path.join(__dirname, 'dev-storage.json');
+
 class SimpleStorage implements IStorage {
   private users: User[] = [];
   private conversations: Conversation[] = [];
@@ -272,6 +280,68 @@ class SimpleStorage implements IStorage {
   private visualizations: Visualization[] = [];
   private templates: Template[] = [];
   private idCounter = 1;
+
+  constructor() {
+    this.loadFromFile();
+  }
+
+  private loadFromFile() {
+    try {
+      if (fs.existsSync(STORAGE_FILE)) {
+        const data = JSON.parse(fs.readFileSync(STORAGE_FILE, 'utf8'));
+        this.users = data.users || [];
+        this.conversations = data.conversations || [];
+        this.messages = data.messages || [];
+        this.dataSources = data.dataSources || [];
+        this.queries = data.queries || [];
+        this.visualizations = data.visualizations || [];
+        this.templates = data.templates || [];
+        this.idCounter = data.idCounter || 1;
+        
+        // Convert date strings back to Date objects - safely
+        this.users = this.users.map(u => ({ 
+          ...u, 
+          createdAt: u.createdAt ? new Date(u.createdAt) : new Date()
+        }));
+        this.conversations = this.conversations.map(c => ({ 
+          ...c, 
+          createdAt: c.createdAt ? new Date(c.createdAt) : new Date(),
+          updatedAt: c.updatedAt ? new Date(c.updatedAt) : null
+        }));
+        this.messages = this.messages.map(m => ({ 
+          ...m, 
+          createdAt: m.createdAt ? new Date(m.createdAt) : new Date()
+        }));
+        this.dataSources = this.dataSources.map(ds => ({ 
+          ...ds, 
+          createdAt: ds.createdAt ? new Date(ds.createdAt) : new Date(),
+          lastSyncAt: ds.lastSyncAt ? new Date(ds.lastSyncAt) : null
+        }));
+        
+        console.log(`✅ Loaded storage with ${this.users.length} users from file`);
+      }
+    } catch (error: any) {
+      console.log('⚠️ Could not load storage file, starting fresh:', error?.message || 'Unknown error');
+    }
+  }
+
+  private saveToFile() {
+    try {
+      const data = {
+        users: this.users,
+        conversations: this.conversations,
+        messages: this.messages,
+        dataSources: this.dataSources,
+        queries: this.queries,
+        visualizations: this.visualizations,
+        templates: this.templates,
+        idCounter: this.idCounter
+      };
+      fs.writeFileSync(STORAGE_FILE, JSON.stringify(data, null, 2));
+    } catch (error: any) {
+      console.error('❌ Error saving storage to file:', error?.message || 'Unknown error');
+    }
+  }
 
   // Method to clear all data for fresh start
   clearAll() {
@@ -283,6 +353,7 @@ class SimpleStorage implements IStorage {
     this.visualizations = [];
     this.templates = [];
     this.idCounter = 1;
+    this.saveToFile();
     console.log('Storage cleared for fresh start');
   }
 
@@ -317,6 +388,7 @@ class SimpleStorage implements IStorage {
       createdAt: new Date(),
     };
     this.users.push(user);
+    this.saveToFile(); // Persist to file
     console.log('User created:', { id: user.id, username: user.username, email: user.email });
     return user;
   }
@@ -341,6 +413,7 @@ class SimpleStorage implements IStorage {
       updatedAt: new Date(),
     };
     this.conversations.push(conversation);
+    this.saveToFile(); // Persist to file
     console.log('Conversation created:', { id: conversation.id, title: conversation.title, userId: conversation.userId });
     console.log('Total conversations now:', this.conversations.length);
     return conversation;
@@ -400,6 +473,7 @@ class SimpleStorage implements IStorage {
       createdAt: new Date(),
     };
     this.dataSources.push(dataSource);
+    this.saveToFile(); // Persist to file
     console.log('Data source created:', { id: dataSource.id, name: dataSource.name, type: dataSource.type });
     return dataSource;
   }

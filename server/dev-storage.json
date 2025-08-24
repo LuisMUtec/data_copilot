@@ -1,0 +1,42 @@
+{
+  "users": [
+    {
+      "id": "2009007c-5ab8-4674-a16d-b27ff163f1e4",
+      "username": "nayus",
+      "email": "a@b.com",
+      "password": "$2b$10$kbCnrA9OEhWs7rEme0puZuDcgG87x5ITOImjLkLGaCskf8Zyd3grK",
+      "createdAt": "2025-08-24T20:11:16.192Z"
+    }
+  ],
+  "conversations": [
+    {
+      "id": "1f3d3865-6f32-4123-9e24-0998fefe56f0",
+      "userId": "2009007c-5ab8-4674-a16d-b27ff163f1e4",
+      "title": "New Analytics Chat",
+      "createdAt": "2025-08-24T20:11:38.914Z",
+      "updatedAt": "2025-08-24T20:11:38.914Z"
+    }
+  ],
+  "messages": [],
+  "dataSources": [
+    {
+      "id": "a50c4897-16e0-4318-82b1-c818131be653",
+      "userId": "2009007c-5ab8-4674-a16d-b27ff163f1e4",
+      "name": "tests",
+      "type": "csv",
+      "config": {
+        "fileName": "test.csv",
+        "hasHeader": true,
+        "fileSize": 3477,
+        "filePath": "./uploads/test.csv"
+      },
+      "isActive": true,
+      "lastSyncAt": null,
+      "createdAt": "2025-08-24T20:11:32.902Z"
+    }
+  ],
+  "queries": [],
+  "visualizations": [],
+  "templates": [],
+  "idCounter": 1
+}
