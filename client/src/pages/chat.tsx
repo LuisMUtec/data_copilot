@@ -10,10 +10,13 @@ export default function ChatPage() {
   const { currentConversation, setCurrentConversation, createNewConversation } = useChat();
 
   useEffect(() => {
+    console.log('ChatPage: conversationId from URL:', conversationId);
+    console.log('ChatPage: currentConversation:', currentConversation);
+    
     if (conversationId && conversationId !== currentConversation?.id) {
+      console.log('ChatPage: Setting current conversation to:', conversationId);
       setCurrentConversation(conversationId);
     }
-    // Don't automatically create new conversation - let user click the button
   }, [conversationId, currentConversation, setCurrentConversation]);
 
   return (

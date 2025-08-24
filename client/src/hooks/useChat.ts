@@ -28,11 +28,14 @@ export function useChat() {
       return response.json();
     },
     onSuccess: (conversation) => {
+      console.log('useChat: Conversation created successfully:', conversation);
       queryClient.invalidateQueries({ queryKey: ["/api/conversations"] });
       setCurrentConversationState(conversation);
+      console.log('useChat: Navigating to:', `/chat/${conversation.id}`);
       setLocation(`/chat/${conversation.id}`);
     },
     onError: (error) => {
+      console.error('useChat: Error creating conversation:', error);
       toast({
         title: "Error",
         description: "Failed to create conversation",
@@ -66,7 +69,9 @@ export function useChat() {
   });
 
   const setCurrentConversation = useCallback((conversationId: string) => {
-    const conversation = conversations.find((c: Conversation) => c.id === conversationId);
+    const conversation = (conversations as Conversation[]).find((c: Conversation) => c.id === conversationId);
+    console.log('useChat: setCurrentConversation called with:', conversationId);
+    console.log('useChat: Found conversation:', conversation);
     if (conversation) {
       setCurrentConversationState(conversation);
     }

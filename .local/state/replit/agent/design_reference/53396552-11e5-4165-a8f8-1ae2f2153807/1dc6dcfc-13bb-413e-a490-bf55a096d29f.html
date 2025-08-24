@@ -1,0 +1,566 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrowthMate AI - Analytics Chatbot for Entrepreneurs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'monospace']
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8'
+                        },
+                        secondary: {
+                            50: '#ecfdf5',
+                            500: '#10b981',
+                            600: '#059669'
+                        },
+                        accent: {
+                            500: '#8b5cf6',
+                            600: '#7c3aed'
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/heroicons/2.0.18/24/outline/heroicons.min.css">
+    <script src="https://unpkg.com/heroicons@2.0.18/24/outline/index.js"></script>
+    <script src="https://unpkg.com/recharts@2.8.0/umd/Recharts.js"></script>
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+    <!-- @COMPONENT: AppShell [main application wrapper] -->
+    <div class="min-h-screen flex">
+        <!-- @COMPONENT: Sidebar [navigation and user context] -->
+        <aside class="hidden lg:flex lg:w-64 lg:flex-col bg-white border-r border-gray-200 shadow-sm">
+            <!-- @STATE: sidebarCollapsed:boolean = false -->
+            <div class="flex-1 flex flex-col pt-6 pb-4 overflow-y-auto">
+                <!-- Logo and Brand -->
+                <div class="flex items-center flex-shrink-0 px-6 mb-8">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h1 class="text-lg font-semibold text-gray-900">GrowthMate AI</h1>
+                            <p class="text-xs text-gray-500">Analytics Assistant</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="flex-1 px-4 space-y-2">
+                    <!-- @MAP: navigationItems.map(item => ( -->
+                    <a href="#" class="bg-primary-50 border-r-2 border-primary-500 text-primary-700 group flex items-center px-2 py-2 text-sm font-medium rounded-lg transition-colors">
+                        <svg class="text-primary-500 mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        Chat Analysis
+                    </a>
+                    <a href="#" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-lg transition-colors">
+                        <svg class="text-gray-400 group-hover:text-gray-500 mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="#" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-lg transition-colors">
+                        <svg class="text-gray-400 group-hover:text-gray-500 mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+                        </svg>
+                        Data Sources
+                    </a>
+                    <a href="#" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-lg transition-colors">
+                        <svg class="text-gray-400 group-hover:text-gray-500 mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        History
+                    </a>
+                    <!-- @END_MAP )) -->
+                </nav>
+
+                <!-- Quick Templates -->
+                <div class="px-4 mt-8">
+                    <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Quick Templates</h3>
+                    <div class="space-y-2">
+                        <!-- @MAP: templates.map(template => ( -->
+                        <button class="w-full text-left p-2 text-xs text-gray-600 hover:bg-gray-50 rounded-lg transition-colors border border-gray-200" data-event="click:applyTemplate">
+                            📊 Revenue Analysis
+                        </button>
+                        <button class="w-full text-left p-2 text-xs text-gray-600 hover:bg-gray-50 rounded-lg transition-colors border border-gray-200" data-event="click:applyTemplate">
+                            👥 Customer Segmentation
+                        </button>
+                        <button class="w-full text-left p-2 text-xs text-gray-600 hover:bg-gray-50 rounded-lg transition-colors border border-gray-200" data-event="click:applyTemplate">
+                            📈 Growth Metrics
+                        </button>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+
+                <!-- User Profile -->
+                <div class="px-4 mt-8 pt-4 border-t border-gray-200">
+                    <div class="flex items-center">
+                        <!-- Professional headshot of a confident entrepreneur -->
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=40&h=40" alt="User avatar" class="h-8 w-8 rounded-full" />
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-700" data-bind="user.name">John Entrepreneur</p>
+                            <p class="text-xs text-gray-500" data-bind="user.plan">Pro Plan</p>
+                        </div>
+                        <button class="ml-auto text-gray-400 hover:text-gray-500">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <!-- @END_COMPONENT: Sidebar -->
+
+        <!-- @COMPONENT: MainContent [chat and visualization area] -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- @COMPONENT: TopBar [mobile navigation and actions] -->
+            <header class="bg-white border-b border-gray-200 px-4 py-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <!-- Mobile menu button -->
+                        <button type="button" class="lg:hidden -ml-2 mr-2 h-12 w-12 inline-flex items-center justify-center rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                        <h1 class="text-lg font-semibold text-gray-900">Analytics Chat</h1>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex items-center space-x-2">
+                        <button class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                            <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Export
+                        </button>
+                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                            <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            New Chat
+                        </button>
+                    </div>
+                </div>
+            </header>
+            <!-- @END_COMPONENT: TopBar -->
+
+            <!-- @COMPONENT: ChatVisualizationLayout [main content area] -->
+            <main class="flex-1 flex overflow-hidden">
+                <!-- @COMPONENT: ChatPanel [conversation interface] -->
+                <div class="flex-1 flex flex-col bg-white">
+                    <!-- Chat Messages Area -->
+                    <div class="flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:px-8">
+                        <!-- @STATE: messages:array = [] -->
+                        <!-- @STATE: isLoading:boolean = false -->
+                        <div class="max-w-4xl mx-auto space-y-6">
+                            
+                            <!-- Welcome Message -->
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="bg-gray-50 rounded-lg px-4 py-3">
+                                        <p class="text-sm text-gray-900">👋 Hi! I'm GrowthMate AI, your analytics assistant. Ask me anything about your business data, and I'll help you create visualizations and insights.</p>
+                                        <p class="text-xs text-gray-500 mt-2">Try: "Show me my revenue trends for the last 6 months" or "What's my customer acquisition cost?"</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- @MAP: messages.map(message => ( -->
+                            <!-- User Message Example -->
+                            <div class="flex items-start space-x-3 justify-end">
+                                <div class="flex-1 min-w-0 text-right">
+                                    <div class="bg-primary-600 text-white rounded-lg px-4 py-3 inline-block max-w-md">
+                                        <p class="text-sm" data-mock="true">Show me the revenue breakdown by product category for this quarter</p>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">2 minutes ago</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <!-- Professional headshot of a confident entrepreneur -->
+                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32" alt="User avatar" class="h-8 w-8 rounded-full" />
+                                </div>
+                            </div>
+
+                            <!-- AI Response with Chart -->
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="bg-gray-50 rounded-lg px-4 py-3">
+                                        <p class="text-sm text-gray-900 mb-4" data-mock="true">I've analyzed your Q1 2024 revenue data and created a breakdown by product category. Here are the key insights:</p>
+                                        
+                                        <!-- @COMPONENT: ChartRenderer [visualization component] -->
+                                        <div class="bg-white rounded-lg border border-gray-200 p-4 mb-4">
+                                            <!-- @FUNCTIONALITY: This should render Recharts component with real data -->
+                                            <div class="h-64 flex items-center justify-center">
+                                                <div class="text-center">
+                                                    <div class="w-16 h-16 bg-gradient-to-br from-secondary-500 to-accent-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                                        </svg>
+                                                    </div>
+                                                    <p class="text-sm font-medium text-gray-900">Revenue by Category</p>
+                                                    <p class="text-xs text-gray-500">Q1 2024 Breakdown</p>
+                                                    <div class="mt-4 space-y-2 text-left">
+                                                        <div class="flex items-center justify-between">
+                                                            <span class="text-xs text-gray-600">SaaS Products</span>
+                                                            <span class="text-xs font-medium">$125,400 (45%)</span>
+                                                        </div>
+                                                        <div class="flex items-center justify-between">
+                                                            <span class="text-xs text-gray-600">Consulting</span>
+                                                            <span class="text-xs font-medium">$89,200 (32%)</span>
+                                                        </div>
+                                                        <div class="flex items-center justify-between">
+                                                            <span class="text-xs text-gray-600">Digital Products</span>
+                                                            <span class="text-xs font-medium">$64,100 (23%)</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- @END_COMPONENT: ChartRenderer -->
+                                        
+                                        <div class="space-y-2 text-sm text-gray-700" data-mock="true">
+                                            <p><strong>Key Insights:</strong></p>
+                                            <ul class="list-disc list-inside space-y-1 text-xs text-gray-600">
+                                                <li>SaaS products generated 45% of total revenue ($125,400)</li>
+                                                <li>Consulting services showed 18% growth vs Q4 2023</li>
+                                                <li>Digital products represent an opportunity for expansion</li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="flex items-center space-x-2 mt-4 pt-3 border-t border-gray-200">
+                                            <button class="inline-flex items-center px-2 py-1 text-xs text-gray-500 hover:text-gray-700 transition-colors" data-event="click:exportChart">
+                                                <svg class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                </svg>
+                                                Export
+                                            </button>
+                                            <button class="inline-flex items-center px-2 py-1 text-xs text-gray-500 hover:text-gray-700 transition-colors" data-event="click:shareInsight">
+                                                <svg class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                                                </svg>
+                                                Share
+                                            </button>
+                                            <button class="inline-flex items-center px-2 py-1 text-xs text-gray-500 hover:text-gray-700 transition-colors" data-event="click:drillDown">
+                                                <svg class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                                </svg>
+                                                Drill Down
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">Just now</p>
+                                </div>
+                            </div>
+
+                            <!-- Typing Indicator (when AI is processing) -->
+                            <div class="flex items-start space-x-3" style="display: none;" data-state="loading">
+                                <div class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                                    </div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="bg-gray-50 rounded-lg px-4 py-3">
+                                        <div class="flex items-center space-x-1">
+                                            <div class="flex space-x-1">
+                                                <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
+                                                <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
+                                                <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.4s"></div>
+                                            </div>
+                                            <p class="text-xs text-gray-500 ml-2">Analyzing your data...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                    </div>
+
+                    <!-- @COMPONENT: ChatInput [message composition area] -->
+                    <div class="border-t border-gray-200 px-4 py-4 sm:px-6 lg:px-8">
+                        <div class="max-w-4xl mx-auto">
+                            <!-- @STATE: inputValue:string = '' -->
+                            <!-- @STATE: isTyping:boolean = false -->
+                            <div class="flex items-end space-x-3">
+                                <div class="flex-1 min-w-0">
+                                    <div class="relative">
+                                        <textarea 
+                                            rows="1" 
+                                            placeholder="Ask me about your business data..." 
+                                            class="block w-full resize-none border border-gray-300 rounded-lg px-3 py-2 pr-12 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                            data-bind="inputValue"
+                                            data-event="keydown:handleKeyDown"
+                                            data-implementation="Auto-resize textarea and handle Enter key submission"
+                                        ></textarea>
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                            <button 
+                                                type="button" 
+                                                class="h-6 w-6 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded"
+                                                data-event="click:attachFile"
+                                                title="Attach data file"
+                                            >
+                                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Quick Suggestions -->
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <!-- @MAP: suggestions.map(suggestion => ( -->
+                                        <button 
+                                            class="inline-flex items-center px-2 py-1 text-xs text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+                                            data-event="click:applySuggestion"
+                                            data-mock="true"
+                                        >
+                                            💡 Monthly revenue trends
+                                        </button>
+                                        <button 
+                                            class="inline-flex items-center px-2 py-1 text-xs text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+                                            data-event="click:applySuggestion"
+                                            data-mock="true"
+                                        >
+                                            📊 Customer segments
+                                        </button>
+                                        <button 
+                                            class="inline-flex items-center px-2 py-1 text-xs text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+                                            data-event="click:applySuggestion"
+                                            data-mock="true"
+                                        >
+                                            📈 Growth metrics
+                                        </button>
+                                        <!-- @END_MAP )) -->
+                                    </div>
+                                </div>
+                                
+                                <div class="flex-shrink-0">
+                                    <button 
+                                        type="button" 
+                                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        data-event="click:sendMessage"
+                                        data-implementation="Handle message submission with loading state"
+                                    >
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                        </svg>
+                                        <span class="sr-only">Send message</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- @END_COMPONENT: ChatInput -->
+                </div>
+                <!-- @END_COMPONENT: ChatPanel -->
+
+                <!-- @COMPONENT: InsightsPanel [contextual information] -->
+                <aside class="hidden xl:block w-80 bg-gray-50 border-l border-gray-200 overflow-y-auto">
+                    <div class="px-4 py-6">
+                        <h2 class="text-sm font-semibold text-gray-900 mb-4">Data Sources</h2>
+                        
+                        <!-- Connected Sources -->
+                        <div class="space-y-3 mb-6">
+                            <!-- @MAP: dataSources.map(source => ( -->
+                            <div class="bg-white rounded-lg border border-gray-200 p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center">
+                                        <div class="w-6 h-6 bg-green-100 rounded flex items-center justify-center">
+                                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                        </div>
+                                        <span class="text-sm font-medium text-gray-900 ml-2" data-mock="true">Google Sheets</span>
+                                    </div>
+                                    <span class="text-xs text-green-600 font-medium">Active</span>
+                                </div>
+                                <p class="text-xs text-gray-500" data-mock="true">Sales Dashboard 2024</p>
+                                <div class="flex items-center justify-between mt-2">
+                                    <span class="text-xs text-gray-400">Last sync: 5 min ago</span>
+                                    <button class="text-xs text-primary-600 hover:text-primary-700">Configure</button>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white rounded-lg border border-gray-200 p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center">
+                                        <div class="w-6 h-6 bg-blue-100 rounded flex items-center justify-center">
+                                            <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                        </div>
+                                        <span class="text-sm font-medium text-gray-900 ml-2" data-mock="true">PostgreSQL</span>
+                                    </div>
+                                    <span class="text-xs text-green-600 font-medium">Active</span>
+                                </div>
+                                <p class="text-xs text-gray-500" data-mock="true">Production Database</p>
+                                <div class="flex items-center justify-between mt-2">
+                                    <span class="text-xs text-gray-400">Last sync: 1 min ago</span>
+                                    <button class="text-xs text-primary-600 hover:text-primary-700">Configure</button>
+                                </div>
+                            </div>
+                            <!-- @END_MAP )) -->
+                        </div>
+
+                        <!-- Add New Source -->
+                        <button class="w-full flex items-center justify-center px-3 py-2 border-2 border-dashed border-gray-300 rounded-lg text-sm text-gray-600 hover:border-gray-400 hover:text-gray-700 transition-colors">
+                            <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Connect Data Source
+                        </button>
+
+                        <!-- Recent Insights -->
+                        <div class="mt-8">
+                            <h3 class="text-sm font-semibold text-gray-900 mb-4">Recent Insights</h3>
+                            <div class="space-y-3">
+                                <!-- @MAP: recentInsights.map(insight => ( -->
+                                <div class="bg-white rounded-lg border border-gray-200 p-3">
+                                    <h4 class="text-sm font-medium text-gray-900 mb-1" data-mock="true">Revenue Growth</h4>
+                                    <p class="text-xs text-gray-600 mb-2" data-mock="true">Q1 revenue increased by 23% compared to Q4</p>
+                                    <span class="text-xs text-gray-400">2 hours ago</span>
+                                </div>
+                                
+                                <div class="bg-white rounded-lg border border-gray-200 p-3">
+                                    <h4 class="text-sm font-medium text-gray-900 mb-1" data-mock="true">Customer Retention</h4>
+                                    <p class="text-xs text-gray-600 mb-2" data-mock="true">Monthly retention rate improved to 94%</p>
+                                    <span class="text-xs text-gray-400">1 day ago</span>
+                                </div>
+                                
+                                <div class="bg-white rounded-lg border border-gray-200 p-3">
+                                    <h4 class="text-sm font-medium text-gray-900 mb-1" data-mock="true">Product Performance</h4>
+                                    <p class="text-xs text-gray-600 mb-2" data-mock="true">SaaS products leading category growth</p>
+                                    <span class="text-xs text-gray-400">2 days ago</span>
+                                </div>
+                                <!-- @END_MAP )) -->
+                            </div>
+                        </div>
+
+                        <!-- Usage Stats -->
+                        <div class="mt-8">
+                            <h3 class="text-sm font-semibold text-gray-900 mb-4">Usage This Month</h3>
+                            <div class="bg-white rounded-lg border border-gray-200 p-3">
+                                <div class="space-y-2">
+                                    <div class="flex justify-between">
+                                        <span class="text-xs text-gray-600">Queries</span>
+                                        <span class="text-xs font-medium" data-bind="usage.queries">248 / 500</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-primary-600 h-2 rounded-full" style="width: 50%"></div>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-xs text-gray-600">Data Processed</span>
+                                        <span class="text-xs font-medium" data-bind="usage.dataProcessed">1.2 GB / 5 GB</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-secondary-500 h-2 rounded-full" style="width: 24%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+                <!-- @END_COMPONENT: InsightsPanel -->
+            </main>
+            <!-- @END_COMPONENT: ChatVisualizationLayout -->
+        </div>
+        <!-- @END_COMPONENT: MainContent -->
+    </div>
+    <!-- @END_COMPONENT: AppShell -->
+
+    <!-- @COMPONENT: MobileMenu [responsive navigation overlay] -->
+    <div class="lg:hidden fixed inset-0 z-50 hidden" id="mobile-menu" data-state="mobileMenuOpen">
+        <div class="fixed inset-0 bg-gray-600 bg-opacity-75"></div>
+        <div class="fixed inset-y-0 left-0 flex flex-col w-64 bg-white border-r border-gray-200 shadow-xl">
+            <!-- Mobile menu content would mirror sidebar content -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">GrowthMate AI</h2>
+                <button type="button" class="text-gray-400 hover:text-gray-500" data-event="click:closeMobileMenu">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <!-- Navigation items would be rendered here -->
+        </div>
+    </div>
+    <!-- @END_COMPONENT: MobileMenu -->
+
+    <script>
+        // TODO: Implement business logic, API calls, or state management
+        (function() {
+            // Initialize app functionality
+            const app = {
+                init: function() {
+                    this.bindEvents();
+                    this.initializeChat();
+                },
+
+                bindEvents: function() {
+                    // Mobile menu toggle
+                    document.addEventListener('click', function(e) {
+                        if (e.target.closest('[data-event]')) {
+                            const eventType = e.target.closest('[data-event]').dataset.event;
+                            console.log('Event triggered:', eventType);
+                            // TODO: Handle specific events like sendMessage, exportChart, etc.
+                        }
+                    });
+
+                    // Auto-resize textarea
+                    document.querySelector('textarea')?.addEventListener('input', function() {
+                        this.style.height = 'auto';
+                        this.style.height = this.scrollHeight + 'px';
+                    });
+
+                    // Handle Enter key in textarea
+                    document.querySelector('textarea')?.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            console.log('Sending message:', this.value);
+                            // TODO: Implement message sending logic
+                        }
+                    });
+                },
+
+                initializeChat: function() {
+                    console.log('Chat initialized');
+                    // TODO: Load chat history, connect to WebSocket, initialize AI service
+                }
+            };
+
+            // Initialize when DOM is loaded
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => app.init());
+            } else {
+                app.init();
+            }
+        })();
+    </script>
+</body>
+</html>

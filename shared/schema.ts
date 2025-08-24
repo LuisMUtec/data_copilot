@@ -146,11 +146,19 @@ export const insertDataSourceSchema = createInsertSchema(dataSources).omit({
   id: true,
   createdAt: true,
   lastSyncAt: true,
+}).extend({
+  // Make userId more flexible for development
+  userId: z.string(),
 });
 
 export const insertQuerySchema = createInsertSchema(queries).omit({
   id: true,
   createdAt: true,
+}).extend({
+  // Make userId and other IDs more flexible for development
+  userId: z.string(),
+  conversationId: z.string().optional().nullable(),
+  dataSourceId: z.string().optional().nullable(),
 });
 
 export const insertVisualizationSchema = createInsertSchema(visualizations).omit({

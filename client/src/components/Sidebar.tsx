@@ -25,7 +25,7 @@ export default function Sidebar() {
   const { createNewConversation } = useChat();
   const queryClient = useQueryClient();
 
-  const { data: conversations = [], isLoading } = useQuery({
+  const { data: conversations = [] as any[], isLoading } = useQuery({
     queryKey: ["/api/conversations"],
   });
 
@@ -60,7 +60,7 @@ export default function Sidebar() {
         {/* Navigation Menu */}
         <nav className="flex-1 px-4 space-y-2">
           <Link href="/chat">
-            <a className={`group flex items-center px-2 py-2 text-sm font-medium rounded-lg transition-colors ${
+            <div className={`group flex items-center px-2 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
               location.startsWith('/chat') 
                 ? 'bg-primary/10 border-r-2 border-primary text-primary' 
                 : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
@@ -70,11 +70,11 @@ export default function Sidebar() {
                 location.startsWith('/chat') ? 'text-primary' : 'text-gray-400 group-hover:text-gray-500'
               }`} />
               Chat Analysis
-            </a>
+            </div>
           </Link>
           
           <Link href="/">
-            <a className={`group flex items-center px-2 py-2 text-sm font-medium rounded-lg transition-colors ${
+            <div className={`group flex items-center px-2 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
               location === '/' 
                 ? 'bg-primary/10 border-r-2 border-primary text-primary' 
                 : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
@@ -84,7 +84,7 @@ export default function Sidebar() {
                 location === '/' ? 'text-primary' : 'text-gray-400 group-hover:text-gray-500'
               }`} />
               Dashboard
-            </a>
+            </div>
           </Link>
 
           <button 
@@ -105,16 +105,16 @@ export default function Sidebar() {
         </nav>
 
         {/* Recent Conversations */}
-        {conversations.length > 0 && (
+        {(conversations as any[]).length > 0 && (
           <div className="px-4 mt-6">
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Recent Chats</h3>
             <div className="space-y-1">
-              {conversations.slice(0, 5).map((conversation: any) => (
+              {(conversations as any[]).slice(0, 5).map((conversation: any) => (
                 <Link key={conversation.id} href={`/chat/${conversation.id}`}>
-                  <a className="block px-2 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition-colors truncate"
+                  <div className="block px-2 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition-colors truncate cursor-pointer"
                      data-testid={`recent-chat-${conversation.id}`}>
                     {conversation.title}
-                  </a>
+                  </div>
                 </Link>
               ))}
             </div>

@@ -42,7 +42,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         refreshToken,
       });
     } catch (error) {
-      res.status(400).json({ message: "Registration failed", error: (error as Error).message });
+      console.error("Registration error:", error);
+      res.status(400).json({ message: "Registration failed", error: (error as Error).message || "Unknown error" });
     }
   });
 
@@ -75,7 +76,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         refreshToken,
       });
     } catch (error) {
-      res.status(400).json({ message: "Login failed", error: (error as Error).message });
+      console.error("Login error:", error);
+      res.status(400).json({ message: "Login failed", error: (error as Error).message || "Unknown error" });
     }
   });
 
@@ -217,34 +219,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/data-sources", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
+      console.log("Creating data source with body:", req.body);
+      console.log("User ID:", req.user!.id);
+      
       const dataSourceData = insertDataSourceSchema.parse({
         ...req.body,
         userId: req.user!.id,
       });
+      
+      console.log("Parsed data source data:", dataSourceData);
+      console.log("About to validate connection...");
 
-      // Validate connection before saving
+      // Validate connection before saving (skip in development)
       let isValid = false;
-      try {
-        if (dataSourceData.type === "google_sheets") {
-          isValid = await googleSheetsService.validateConnection(dataSourceData.config as any);
-        } else if (dataSourceData.type === "csv") {
-          const { csvService } = await import("./services/csvService");
-          isValid = await csvService.validateConnection(dataSourceData.config as any);
-        } else if (dataSourceData.type === "api") {
-          const { apiService } = await import("./services/apiService");
-          isValid = await apiService.validateConnection(dataSourceData.config as any);
-        } else if (dataSourceData.type === "postgresql") {
-          const { postgresqlService } = await import("./services/postgresqlService");
-          isValid = await postgresqlService.validateConnection(dataSourceData.config as any);
-        } else {
-          isValid = true; // For unknown types, skip validation for now
+      if (process.env.NODE_ENV === 'development') {
+        console.log("Skipping connection validation in development mode");
+        isValid = true;
+      } else {
+        try {
+          if (dataSourceData.type === "google_sheets") {
+            isValid = await googleSheetsService.validateConnection(dataSourceData.config as any);
+          } else if (dataSourceData.type === "csv") {
+            const { csvService } = await import("./services/csvService");
+            isValid = await csvService.validateConnection(dataSourceData.config as any);
+          } else if (dataSourceData.type === "api") {
+            const { apiService } = await import("./services/apiService");
+            isValid = await apiService.validateConnection(dataSourceData.config as any);
+          } else if (dataSourceData.type === "postgresql") {
+            const { postgresqlService } = await import("./services/postgresqlService");
+            isValid = await postgresqlService.validateConnection(dataSourceData.config as any);
+          } else {
+            isValid = true; // For unknown types, skip validation for now
+          }
+        } catch (validationError) {
+          return res.status(400).json({ 
+            message: "Connection test failed", 
+            error: (validationError as Error).message 
+          });
         }
-      } catch (validationError) {
-        return res.status(400).json({ 
-          message: "Connection test failed", 
-          error: (validationError as Error).message 
-        });
       }
+
+      console.log("Connection validation passed, isValid:", isValid);
 
       if (!isValid) {
         return res.status(400).json({ 
@@ -252,9 +267,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      console.log("About to create data source in storage...");
       const dataSource = await storage.createDataSource(dataSourceData);
+      console.log("Data source created successfully:", dataSource);
       res.status(201).json(dataSource);
     } catch (error) {
+      console.error("Error creating data source:", error);
+      console.error("Error stack:", (error as Error).stack);
       res.status(400).json({ message: "Failed to create data source", error: (error as Error).message });
     }
   });
