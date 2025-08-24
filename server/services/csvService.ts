@@ -51,11 +51,15 @@ export class CSVService {
   async getCSVSchema(config: CSVConfig): Promise<CSVSchema> {
     console.log('Getting CSV schema for config:', config);
     try {
-      if (!fs.existsSync(config.filePath)) {
-        throw new Error(`CSV file not found: ${config.filePath}`);
+      // Resolve relative paths from project root
+      const resolvedPath = path.isAbsolute(config.filePath) ? config.filePath : path.resolve(process.cwd(), config.filePath);
+      console.log('Resolved CSV file path:', resolvedPath);
+      
+      if (!fs.existsSync(resolvedPath)) {
+        throw new Error(`CSV file not found: ${resolvedPath}`);
       }
 
-      const fileContent = fs.readFileSync(config.filePath, "utf-8");
+      const fileContent = fs.readFileSync(resolvedPath, "utf-8");
       console.log('CSV file content preview:', fileContent.substring(0, 200));
       
       const records: any[] = parse(fileContent, {
@@ -144,11 +148,15 @@ export class CSVService {
     console.log('Query object:', query);
     
     try {
-      if (!fs.existsSync(config.filePath)) {
-        throw new Error(`CSV file not found: ${config.filePath}`);
+      // Resolve relative paths from project root
+      const resolvedPath = path.isAbsolute(config.filePath) ? config.filePath : path.resolve(process.cwd(), config.filePath);
+      console.log('Resolved CSV file path for query:', resolvedPath);
+      
+      if (!fs.existsSync(resolvedPath)) {
+        throw new Error(`CSV file not found: ${resolvedPath}`);
       }
 
-      const fileContent = fs.readFileSync(config.filePath, "utf-8");
+      const fileContent = fs.readFileSync(resolvedPath, "utf-8");
       let records: any[] = parse(fileContent, {
         columns: config.hasHeader,
         skip_empty_lines: true,
@@ -354,14 +362,17 @@ export class CSVService {
     try {
       if (!config.filePath) return false;
       
+      // Resolve relative paths from project root
+      const resolvedPath = path.isAbsolute(config.filePath) ? config.filePath : path.resolve(process.cwd(), config.filePath);
+      
       // Check if file exists
-      if (!fs.existsSync(config.filePath)) return false;
+      if (!fs.existsSync(resolvedPath)) return false;
       
       // Check if file is readable
-      fs.accessSync(config.filePath, fs.constants.R_OK);
+      fs.accessSync(resolvedPath, fs.constants.R_OK);
       
       // Try to parse the first few lines
-      const fileContent = fs.readFileSync(config.filePath, "utf-8");
+      const fileContent = fs.readFileSync(resolvedPath, "utf-8");
       const lines = fileContent.split('\n').slice(0, 5).join('\n');
       parse(lines, { columns: config.hasHeader, skip_empty_lines: true });
       

@@ -21,7 +21,15 @@ interface ChartInsights {
 }
 
 export class OpenAIService {
+  private validateApiKey(): void {
+    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === "your-openai-api-key-here") {
+      throw new Error("OPENAI_API_KEY is not configured. Please set a valid API key in your .env file.");
+    }
+  }
+
   async analyzeNaturalLanguageQuery(query: string): Promise<QueryAnalysis> {
+    this.validateApiKey();
+    
     try {
       const response = await openai.chat.completions.create({
         model: "gpt-4o",
@@ -60,6 +68,17 @@ export class OpenAIService {
 
       return JSON.parse(response.choices[0].message.content || "{}");
     } catch (error) {
+      if (error instanceof Error) {
+        if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+          throw new Error("Invalid OpenAI API key. Please verify your OPENAI_API_KEY in the .env file.");
+        }
+        if (error.message.includes('403') || error.message.includes('Forbidden')) {
+          throw new Error("OpenAI API access denied. Please check your API key permissions.");
+        }
+        if (error.message.includes('429') || error.message.includes('quota')) {
+          throw new Error("OpenAI API quota exceeded. Please check your usage limits.");
+        }
+      }
       throw new Error("Failed to analyze query: " + (error as Error).message);
     }
   }
@@ -69,6 +88,8 @@ export class OpenAIService {
     analysis: QueryAnalysis, 
     dataSourceSchema: any
   ): Promise<string> {
+    this.validateApiKey();
+    
     try {
       const response = await openai.chat.completions.create({
         model: "gpt-4o",
@@ -105,6 +126,8 @@ export class OpenAIService {
   }
 
   async generateChartInsights(chartData: any, chartType: string, originalQuery: string): Promise<ChartInsights> {
+    this.validateApiKey();
+    
     try {
       const response = await openai.chat.completions.create({
         model: "gpt-4o",
@@ -146,6 +169,8 @@ export class OpenAIService {
   }
 
   async generateConversationTitle(messages: string[]): Promise<string> {
+    this.validateApiKey();
+    
     try {
       const response = await openai.chat.completions.create({
         model: "gpt-4o",

@@ -1,0 +1,25 @@
+fecha,producto,ventas,cliente
+2024-01-15,Producto A,1000,Cliente 1
+2024-01-22,Producto B,1500,Cliente 2
+2024-02-03,Producto A,800,Cliente 3
+2024-02-14,Producto C,2000,Cliente 1
+2024-03-05,Producto B,1200,Cliente 4
+2024-03-18,Producto A,900,Cliente 2
+2024-04-02,Producto C,1800,Cliente 5
+2024-04-21,Producto B,1100,Cliente 3
+2024-05-10,Producto A,1300,Cliente 1
+2024-05-28,Producto C,2200,Cliente 6
+2024-06-15,Producto B,950,Cliente 4
+2024-06-30,Producto A,1150,Cliente 2
+2024-07-08,Producto C,1900,Cliente 7
+2024-07-25,Producto B,1050,Cliente 5
+2024-08-12,Producto A,1400,Cliente 3
+2024-08-29,Producto C,2100,Cliente 8
+2024-09-05,Producto B,850,Cliente 1
+2024-09-22,Producto A,1250,Cliente 6
+2024-10-10,Producto C,1750,Cliente 4
+2024-10-28,Producto B,1000,Cliente 9
+2024-11-15,Producto A,1350,Cliente 2
+2024-11-30,Producto C,2300,Cliente 7
+2024-12-12,Producto B,1200,Cliente 10
+2024-12-28,Producto A,1600,Cliente 5

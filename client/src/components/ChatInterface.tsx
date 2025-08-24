@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useChat } from "@/hooks/useChat";
 import { apiRequest } from "@/lib/queryClient";
-import ChartRenderer from "./ChartRenderer";
+import { EnhancedChart } from "./ui/enhanced-chart";
 import { Paperclip, Send, Lightbulb } from "lucide-react";
 
 interface Message {
@@ -176,10 +176,12 @@ export default function ChatInterface() {
             {/* Render chart if available */}
             {parsedContent.visualization && (
               <div className="mb-4">
-                <ChartRenderer 
+                <EnhancedChart 
+                  title="Data Visualization"
                   type={parsedContent.visualization.type}
                   data={parsedContent.visualization.data}
                   config={parsedContent.visualization.config}
+                  insights={parsedContent}
                 />
               </div>
             )}

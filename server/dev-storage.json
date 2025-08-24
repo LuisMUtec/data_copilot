@@ -6,6 +6,13 @@
       "email": "a@b.com",
       "password": "$2b$10$kbCnrA9OEhWs7rEme0puZuDcgG87x5ITOImjLkLGaCskf8Zyd3grK",
       "createdAt": "2025-08-24T20:11:16.192Z"
+    },
+    {
+      "id": "bce49724-db69-4789-9565-94b7a63b11e2",
+      "username": "luis",
+      "email": "luis@gmail.com",
+      "password": "$2b$10$OQJ8KVuk8eEXWIRpe7Qpq.baqeAdzc.WHw/eCmlNrn5wK5szp1U.y",
+      "createdAt": "2025-08-24T20:34:29.924Z"
     }
   ],
   "conversations": [
@@ -15,9 +22,53 @@
       "title": "New Analytics Chat",
       "createdAt": "2025-08-24T20:11:38.914Z",
       "updatedAt": "2025-08-24T20:11:38.914Z"
+    },
+    {
+      "id": "b3eef9dc-9f61-4763-a520-79c00a97d590",
+      "userId": "bce49724-db69-4789-9565-94b7a63b11e2",
+      "title": "New Analytics Chat",
+      "createdAt": "2025-08-24T20:34:40.618Z",
+      "updatedAt": "2025-08-24T20:34:40.618Z"
+    },
+    {
+      "id": "622d2c74-919e-4243-bd98-16b7aadbff16",
+      "userId": "bce49724-db69-4789-9565-94b7a63b11e2",
+      "title": "New Analytics Chat",
+      "createdAt": "2025-08-24T20:42:11.214Z",
+      "updatedAt": "2025-08-24T20:42:11.214Z"
+    },
+    {
+      "id": "60b59f5c-e776-4f60-83f9-6182929dbfe3",
+      "userId": "bce49724-db69-4789-9565-94b7a63b11e2",
+      "title": "New Analytics Chat",
+      "createdAt": "2025-08-24T20:43:19.370Z",
+      "updatedAt": "2025-08-24T20:43:19.370Z"
+    },
+    {
+      "id": "c2789d84-9943-4a45-8281-59c85ec1f2dd",
+      "userId": "bce49724-db69-4789-9565-94b7a63b11e2",
+      "title": "New Analytics Chat",
+      "createdAt": "2025-08-24T20:45:03.910Z",
+      "updatedAt": "2025-08-24T20:45:03.910Z"
+    },
+    {
+      "id": "78685b68-1d98-4fbb-8a62-79b450f4b3bd",
+      "userId": "bce49724-db69-4789-9565-94b7a63b11e2",
+      "title": "New Analytics Chat",
+      "createdAt": "2025-08-24T20:47:07.489Z",
+      "updatedAt": "2025-08-24T20:47:07.489Z"
     }
   ],
-  "messages": [],
+  "messages": [
+    {
+      "id": "edb87d1d-987d-44d4-ae91-dc39bb2ad3e0",
+      "conversationId": "78685b68-1d98-4fbb-8a62-79b450f4b3bd",
+      "role": "user",
+      "content": "Growth metrics",
+      "metadata": null,
+      "createdAt": "2025-08-24T20:47:11.042Z"
+    }
+  ],
   "dataSources": [
     {
       "id": "a50c4897-16e0-4318-82b1-c818131be653",
@@ -33,6 +84,21 @@
       "isActive": true,
       "lastSyncAt": null,
       "createdAt": "2025-08-24T20:11:32.902Z"
+    },
+    {
+      "id": "3899008a-2a54-4ba4-bce8-11c2081da467",
+      "userId": "bce49724-db69-4789-9565-94b7a63b11e2",
+      "name": "Sales",
+      "type": "csv",
+      "config": {
+        "fileName": "sales_data_sample.csv",
+        "hasHeader": true,
+        "fileSize": 527958,
+        "filePath": "./uploads/sales_data_sample.csv"
+      },
+      "isActive": true,
+      "lastSyncAt": null,
+      "createdAt": "2025-08-24T20:47:32.353Z"
     }
   ],
   "queries": [],
